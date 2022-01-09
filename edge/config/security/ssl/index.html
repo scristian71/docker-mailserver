@@ -9,14 +9,13 @@
         <meta name="description" content="A fullstack but simple mail-server (SMTP, IMAP, LDAP, Antispam, Antivirus, etc.) using Docker.">
       
       
-      
         <meta name="author" content="docker-mailserver (Github Organization)">
       
       
         <link rel="canonical" href="https://docker-mailserver.github.io/docker-mailserver/edge/config/security/ssl/">
       
       <link rel="icon" href="../../../assets/logo/favicon-32x32.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.3">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.1">
     
     
       
@@ -24,10 +23,10 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.5143246d.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.23b6d78a.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.3f5d1f46.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.e6a45f82.min.css">
         
       
     
@@ -37,16 +36,15 @@
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
-        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
-    
     
     
       <link rel="stylesheet" href="../../../assets/css/customizations.css">
     
+    <script>__md_scope=new URL("../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
-
 
     
     
@@ -63,9 +61,8 @@
     <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
-    <script>function __prefix(e){return new URL("../../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
     
-      <script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -73,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#lets-encrypt-recommended" class="md-skip">
+        <a href="#the-fqdn" class="md-skip">
           Skip to content
         </a>
       
@@ -81,6 +78,13 @@
     <div data-md-component="announce">
       
     </div>
+    
+      <div data-md-component="outdated" hidden>
+        <aside class="md-banner md-banner--warning">
+          
+        </aside>
+      </div>
+    
     
       
 
@@ -138,8 +142,7 @@
       <label class="md-header__button md-icon" for="__search">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
       </label>
-      
-<div class="md-search" data-md-component="search" role="dialog">
+      <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
@@ -171,8 +174,7 @@
     
     
       <div class="md-header__source">
-        
-<a href="https://github.com/docker-mailserver/docker-mailserver/" title="Go to repository" class="md-source" data-md-component="source">
+        <a href="https://github.com/docker-mailserver/docker-mailserver/" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
@@ -344,8 +346,7 @@
   </label>
   
     <div class="md-nav__source">
-      
-<a href="https://github.com/docker-mailserver/docker-mailserver/" title="Go to repository" class="md-source" data-md-component="source">
+      <a href="https://github.com/docker-mailserver/docker-mailserver/" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
@@ -661,6 +662,7 @@
       </a>
       
         
+
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -673,6 +675,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#the-fqdn" class="md-nav__link">
+    The FQDN
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#provisioning-methods" class="md-nav__link">
+    Provisioning methods
+  </a>
+  
+    <nav class="md-nav" aria-label="Provisioning methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#lets-encrypt-recommended" class="md-nav__link">
     Let's Encrypt (Recommended)
   </a>
@@ -682,28 +699,28 @@
         
           <li class="md-nav__item">
   <a href="#example-using-docker-for-lets-encrypt" class="md-nav__link">
-    Example using Docker for Let's Encrypt
+    Certbot with Docker
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#example-using-nginx-proxy-and-acme-companion-with-docker" class="md-nav__link">
-    Example using nginx-proxy and acme-companion with Docker
+    nginx-proxy with Docker
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#example-using-nginx-proxy-and-acme-companion-with-docker-compose" class="md-nav__link">
-    Example using nginx-proxy and acme-companion with docker-compose
+    nginx-proxy with docker-compose
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#example-using-lets-encrypt-certificates-with-a-synology-nas" class="md-nav__link">
-    Example using Let's Encrypt Certificates with a Synology NAS
+    Synology NAS
   </a>
   
 </li>
@@ -712,22 +729,22 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#caddy" class="md-nav__link">
     Caddy
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#traefik-v2" class="md-nav__link">
     Traefik v2
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#self-signed-certificates" class="md-nav__link">
     Self-Signed Certificates
   </a>
@@ -746,11 +763,16 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#bring-your-own-certificates" class="md-nav__link">
     Bring Your Own Certificates
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1552,6 +1574,7 @@
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
+
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -1564,6 +1587,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#the-fqdn" class="md-nav__link">
+    The FQDN
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#provisioning-methods" class="md-nav__link">
+    Provisioning methods
+  </a>
+  
+    <nav class="md-nav" aria-label="Provisioning methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#lets-encrypt-recommended" class="md-nav__link">
     Let's Encrypt (Recommended)
   </a>
@@ -1573,28 +1611,28 @@
         
           <li class="md-nav__item">
   <a href="#example-using-docker-for-lets-encrypt" class="md-nav__link">
-    Example using Docker for Let's Encrypt
+    Certbot with Docker
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#example-using-nginx-proxy-and-acme-companion-with-docker" class="md-nav__link">
-    Example using nginx-proxy and acme-companion with Docker
+    nginx-proxy with Docker
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#example-using-nginx-proxy-and-acme-companion-with-docker-compose" class="md-nav__link">
-    Example using nginx-proxy and acme-companion with docker-compose
+    nginx-proxy with docker-compose
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#example-using-lets-encrypt-certificates-with-a-synology-nas" class="md-nav__link">
-    Example using Let's Encrypt Certificates with a Synology NAS
+    Synology NAS
   </a>
   
 </li>
@@ -1603,22 +1641,22 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#caddy" class="md-nav__link">
     Caddy
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#traefik-v2" class="md-nav__link">
     Traefik v2
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#self-signed-certificates" class="md-nav__link">
     Self-Signed Certificates
   </a>
@@ -1637,11 +1675,16 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#bring-your-own-certificates" class="md-nav__link">
     Bring Your Own Certificates
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1685,14 +1728,14 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/docker-mailserver/docker-mailserver/edit/master/docs/content/config/security/ssl.md" title="Edit this page" class="md-content__button md-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
-                  </a>
-                
-                
-                  <h1>SSL/TLS</h1>
-                
-                <p>There are multiple options to enable SSL (via <a href="../../environment/#ssl_type"><code>SSL_TYPE</code></a>):</p>
+<a href="https://github.com/docker-mailserver/docker-mailserver/edit/master/docs/content/config/security/ssl.md" title="Edit this page" class="md-content__button md-icon">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+</a>
+
+
+  <h1>SSL/TLS</h1>
+
+<p>There are multiple options to enable SSL (via <a href="../../environment/#ssl_type"><code>SSL_TYPE</code></a>):</p>
 <ul>
 <li>Using <a href="#lets-encrypt-recommended">letsencrypt</a> (recommended)</li>
 <li>Using <a href="#caddy">Caddy</a></li>
@@ -1711,22 +1754,56 @@
 <p>When using a public CA for certificates used in private networks, be aware that the associated DNS labels in the certificate are logged publicly and <a href="https://crt.sh/">easily searchable</a>. These logs are <em>append only</em>, you <strong>cannot</strong> redact this information.</p>
 <p>You could use a <a href="https://en.wikipedia.org/wiki/Wildcard_certificate#Examples">wildcard certificate</a>. This avoids accidentally leaking information to the internet, but keep in mind the <a href="https://gist.github.com/joepie91/7e5cad8c0726fd6a5e90360a754fc568">potential security risks</a> of wildcard certs.</p>
 </div>
-<h2 id="lets-encrypt-recommended"><a class="toclink" href="#lets-encrypt-recommended">Let's Encrypt (Recommended)</a></h2>
+<h2 id="the-fqdn"><a class="toclink" href="#the-fqdn">The FQDN</a></h2>
+<p>An <a href="https://en.wikipedia.org/wiki/Fully_qualified_domain_name">FQDN</a> (<em>Fully Qualified Domain Name</em>) such as <code>mail.example.com</code> is required for <code>docker-mailserver</code> to function correctly, especially for looking up the correct SSL certificate to use.</p>
+<p>Internally, <code>hostname -f</code> will be used to retrieve the FQDN as configured in the below examples.</p>
+<p>Wildcard certificates (eg: <code>*.example.com</code>) are supported for <code>SSL_TYPE=letsencrypt</code>. Your configured FQDN below may be <code>mail.example.com</code>, and your wildcard certificate provisioned to <code>/etc/letsencrypt/live/example.com</code> which will be checked as a fallback FQDN by <code>docker-mailserver</code>.</p>
+<div class="admonition example">
+<p class="admonition-title">Docker CLI options <code>--hostname</code> and optionally <code>--domainname</code></p>
+<div class="highlight"><pre><span></span><code>docker run --hostname mail --domainname example.com
+<span class="c1"># `--domainname` is not required:</span>
+docker run --hostname mail.example.com
+</code></pre></div>
+</div>
+<div class="admonition example">
+<p class="admonition-title"><code>docker-compose.yml</code> config</p>
+<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
+  <span class="nt">mailserver</span><span class="p">:</span>
+    <span class="nt">hostname</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mail</span>
+    <span class="nt">domainname</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">example.com</span>
+<span class="c1"># `domainname` is not required:</span>
+<span class="nt">services</span><span class="p">:</span>
+  <span class="nt">mailserver</span><span class="p">:</span>
+    <span class="nt">hostname</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mail.example.com</span>
+</code></pre></div>
+</div>
+<div class="admonition example">
+<p class="admonition-title"><em>Bare domains</em> (eg: <code>example.com</code>) should only use the hostname option</p>
+<div class="highlight"><pre><span></span><code>docker run --hostname example.com
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
+  <span class="nt">mailserver</span><span class="p">:</span>
+    <span class="nt">hostname</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">example.com</span>
+</code></pre></div>
+</div>
+<h2 id="provisioning-methods"><a class="toclink" href="#provisioning-methods">Provisioning methods</a></h2>
+<h3 id="lets-encrypt-recommended"><a class="toclink" href="#lets-encrypt-recommended">Let's Encrypt (Recommended)</a></h3>
 <p>To enable <em>Let's Encrypt</em> for <code>docker-mailserver</code>, you have to:</p>
 <ol>
 <li>Get your certificate using the <em>Let's Encrypt</em> client <a href="https://github.com/certbot/certbot">Certbot</a>.</li>
 <li>
 <p>For your <code>docker-mailserver</code> container:</p>
-<ol>
+<ul>
 <li>Add the environment variable <code>SSL_TYPE=letsencrypt</code>.</li>
 <li>Mount <a href="https://certbot.eff.org/docs/using.html#where-are-my-certificates">your local <code>letsencrypt</code> folder</a> as a volume to <code>/etc/letsencrypt</code>.</li>
-</ol>
+</ul>
 </li>
 </ol>
 <p>You don't have to do anything else. Enjoy!</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code>/etc/letsencrypt/live</code> stores provisioned certificates in individual folders named by their FQDN (<em>Fully Qualified Domain Name</em>). <code>docker-mailserver</code> looks for it's certificate folder via the <code>hostname</code> command. The FQDN inside the docker container is derived from the <code>--hostname</code> and <code>--domainname</code> options.</p>
+<p><code>/etc/letsencrypt/live</code> stores provisioned certificates in individual folders named by their FQDN.</p>
+<p>Make sure that the entire folder is mounted to <code>docker-mailserver</code> as there are typically symlinks from <code>/etc/letsencrypt/live/mail.example.com</code> to <code>/etc/letsencrypt/archive</code>.</p>
 </div>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
@@ -1742,7 +1819,7 @@
       <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">/etc/letsencrypt:/etc/letsencrypt</span>
 </code></pre></div>
 </div>
-<h3 id="example-using-docker-for-lets-encrypt"><a class="toclink" href="#example-using-docker-for-lets-encrypt">Example using Docker for <em>Let's Encrypt</em></a></h3>
+<h4 id="example-using-docker-for-lets-encrypt"><a class="toclink" href="#example-using-docker-for-lets-encrypt">Example using Docker for <em>Let's Encrypt</em></a></h4>
 <ul>
 <li>Certbot provisions certificates to <code>/etc/letsencrypt</code>. Add a volume to store these, so that they can later be accessed by <code>docker-mailserver</code> container.</li>
 <li>
@@ -1782,7 +1859,7 @@ docker run --rm -it <span class="se">\</span>
 <p class="admonition-title">Using a different ACME CA</p>
 <p>Certbot does support <a href="https://certbot.eff.org/docs/using.htmlchanging-the-acme-server">alternative certificate providers via the <code>--server</code></a> option. In most cases you'll want to use the default <em>Let's Encrypt</em>.</p>
 </div>
-<h3 id="example-using-nginx-proxy-and-acme-companion-with-docker"><a class="toclink" href="#example-using-nginx-proxy-and-acme-companion-with-docker">Example using <code>nginx-proxy</code> and <code>acme-companion</code> with Docker</a></h3>
+<h4 id="example-using-nginx-proxy-and-acme-companion-with-docker"><a class="toclink" href="#example-using-nginx-proxy-and-acme-companion-with-docker">Example using <code>nginx-proxy</code> and <code>acme-companion</code> with Docker</a></h4>
 <p>If you are running a web server already, port 80 will be in use which Certbot requires. You could use the <a href="https://certbot.eff.org/docs/using.html#webroot">Certbot <code>--webroot</code></a> feature, but it is more common to leverage a <em>reverse proxy</em> that manages the provisioning and renewal of certificates for your services automatically.</p>
 <p>In the following example, we show how <code>docker-mailserver</code> can be run alongside the docker containers <a href="https://github.com/nginx-proxy/nginx-proxy"><code>nginx-proxy</code></a> and <a href="https://github.com/nginx-proxy/acme-companion"><code>acme-companion</code></a> (<em>Referencing: <a href="https://github.com/nginx-proxy/acme-companion/blob/main/docs"><code>acme-companion</code> documentation</a></em>):</p>
 <ol>
@@ -1818,7 +1895,7 @@ docker run --detach <span class="se">\</span>
 <p>Start the rest of your web server containers as usual.</p>
 </li>
 <li>
-<p>Start a <em>dummy container</em> to provision certificatess for your FQDN (eg: <code>mail.example.com</code>). <code>acme-companion</code> will detect the container and generate a <em>Let's Encrypt</em> certificate for your domain, which can be used by <code>docker-mailserver</code>:</p>
+<p>Start a <em>dummy container</em> to provision certificates for your FQDN (eg: <code>mail.example.com</code>). <code>acme-companion</code> will detect the container and generate a <em>Let's Encrypt</em> certificate for your domain, which can be used by <code>docker-mailserver</code>:</p>
 <div class="highlight"><pre><span></span><code>docker run --detach <span class="se">\</span>
   --name webmail <span class="se">\</span>
   --env <span class="s1">&#39;VIRTUAL_HOST=mail.example.com&#39;</span> <span class="se">\</span>
@@ -1841,9 +1918,11 @@ docker run --detach <span class="se">\</span>
 <p>Then from the <code>docker-compose.yml</code> project directory, run: <code>docker-compose up -d mailserver</code>.</p>
 </li>
 </ol>
-<h3 id="example-using-nginx-proxy-and-acme-companion-with-docker-compose"><a class="toclink" href="#example-using-nginx-proxy-and-acme-companion-with-docker-compose">Example using <code>nginx-proxy</code> and <code>acme-companion</code> with <code>docker-compose</code></a></h3>
+<h4 id="example-using-nginx-proxy-and-acme-companion-with-docker-compose"><a class="toclink" href="#example-using-nginx-proxy-and-acme-companion-with-docker-compose">Example using <code>nginx-proxy</code> and <code>acme-companion</code> with <code>docker-compose</code></a></h4>
 <p>The following example is the <a href="https://github.com/nginx-proxy/acme-companion#basic-usage-with-the-nginx-proxy-container">basic setup</a> you need for using <code>nginx-proxy</code> and <code>acme-companion</code> with <code>docker-mailserver</code> (<em>Referencing: <a href="https://github.com/nginx-proxy/acme-companion/blob/main/docs"><code>acme-companion</code> documentation</a></em>):</p>
-<details class="example" open="open"><summary>Example: <code>docker-compose.yml</code></summary><p>You should have an existing <code>docker-compose.yml</code> with a <code>mailserver</code> service. Below are the modifications to add for integrating with <code>nginx-proxy</code> and <code>acme-companion</code> services:</p>
+<details class="example" open="open">
+<summary>Example: <code>docker-compose.yml</code></summary>
+<p>You should have an existing <code>docker-compose.yml</code> with a <code>mailserver</code> service. Below are the modifications to add for integrating with <code>nginx-proxy</code> and <code>acme-companion</code> services:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3.8&#39;</span>
 <span class="nt">services</span><span class="p">:</span>
   <span class="c1"># Add the following `environment` and `volumes` to your existing `mailserver` service:</span>
@@ -1955,7 +2034,7 @@ docker run --detach <span class="se">\</span>
 <p>Unlike with the equivalent ENV for containers, <a href="https://github.com/nginx-proxy/acme-companion/blob/main/docs/Standalone-certificates.md#picking-up-changes-to-letsencrypt_user_data">changes to this file will <strong>not</strong> be detected automatically</a>. You would need to wait until the next renewal check by <code>acme-companion</code> (<em>every hour by default</em>), restart <code>acme-companion</code>, or <a href="https://github.com/nginx-proxy/acme-companion/blob/main/docs/Container-utilities.md">manually invoke the <em>service loop</em></a>:</p>
 <p><code class="highlight">docker <span class="nb">exec</span> nginx-proxy-acme /app/signal_le_service</code></p>
 </div>
-<h3 id="example-using-lets-encrypt-certificates-with-a-synology-nas"><a class="toclink" href="#example-using-lets-encrypt-certificates-with-a-synology-nas">Example using <em>Let's Encrypt</em> Certificates with a <em>Synology NAS</em></a></h3>
+<h4 id="example-using-lets-encrypt-certificates-with-a-synology-nas"><a class="toclink" href="#example-using-lets-encrypt-certificates-with-a-synology-nas">Example using <em>Let's Encrypt</em> Certificates with a <em>Synology NAS</em></a></h4>
 <p>Version 6.2 and later of the Synology NAS DSM OS now come with an interface to generate and renew letencrypt certificates. Navigation into your DSM control panel and go to Security, then click on the tab Certificate to generate and manage letsencrypt certificates.</p>
 <p>Amongst other things, you can use these to secure your mail-server. DSM locates the generated certificates in a folder below <code>/usr/syno/etc/certificate/_archive/</code>.</p>
 <p>Navigate to that folder and note the 6 character random folder name of the certificate you'd like to use. Then, add the following to your <code>docker-compose.yml</code> declaration file:</p>
@@ -1969,7 +2048,7 @@ docker run --detach <span class="se">\</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">SSL_KEY_PATH=/tmp/dms/custom-certs/privkey.pem</span>
 </code></pre></div>
 <p>DSM-generated letsencrypt certificates get auto-renewed every three months.</p>
-<h2 id="caddy"><a class="toclink" href="#caddy">Caddy</a></h2>
+<h3 id="caddy"><a class="toclink" href="#caddy">Caddy</a></h3>
 <p>If you are using Caddy to renew your certificates, please note that only RSA certificates work. Read <a href="https://github.com/docker-mailserver/docker-mailserver/issues/1440">#1440</a> for details. In short for Caddy v1 the <code>Caddyfile</code> should look something like:</p>
 <div class="highlight"><pre><span></span><code>https://mail.example.com {
   tls admin@example.com {
@@ -1988,7 +2067,9 @@ docker run --detach <span class="se">\</span>
 }
 </code></pre></div>
 <p>If you are instead using a json config for Caddy v2, you can set it in your site's TLS automation policies:</p>
-<details class="example" open="open"><summary>Example Code</summary><div class="highlight"><pre><span></span><code><span class="p">{</span>
+<details class="example" open="open">
+<summary>Example Code</summary>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
   <span class="nt">&quot;apps&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="nt">&quot;http&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="nt">&quot;servers&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -2063,16 +2144,20 @@ docker run --detach <span class="se">\</span>
 <span class="go">no peer certificate available</span>
 <span class="go">No client certificate CA names sent</span>
 </code></pre></div>
-<h2 id="traefik-v2"><a class="toclink" href="#traefik-v2">Traefik v2</a></h2>
+<h3 id="traefik-v2"><a class="toclink" href="#traefik-v2">Traefik v2</a></h3>
 <p><a href="https://github.com/containous/traefik">Traefik</a> is an open-source application proxy using the <a href="https://datatracker.ietf.org/doc/html/rfc8555">ACME protocol</a>. <a href="https://github.com/containous/traefik">Traefik</a> can request certificates for domains and subdomains, and it will take care of renewals, challenge negotiations, etc. We strongly recommend to use <a href="https://github.com/containous/traefik">Traefik</a>'s major version 2.</p>
-<p><a href="https://github.com/containous/traefik">Traefik</a>'s storage format is natively supported if the <code>acme.json</code> store is mounted into the container at <code>/etc/letsencrypt/acme.json</code>. The file is also monitored for changes and will trigger a reload of the mail services (Postfix and Dovecot). Wild card certificates issued for <code>*.example.com</code> are supported. You will then want to use <code class="highlight"><span class="nv">SSL_DOMAIN</span><span class="o">=</span>example.com</code>. Lookup of the certificate domain happens in the following order:</p>
+<p><a href="https://github.com/containous/traefik">Traefik</a>'s storage format is natively supported if the <code>acme.json</code> store is mounted into the container at <code>/etc/letsencrypt/acme.json</code>. The file is also monitored for changes and will trigger a reload of the mail services (Postfix and Dovecot).</p>
+<p>Wildcard certificates are supported. If your FQDN is <code>mail.example.com</code> and your wildcard certificate is <code>*.example.com</code>, add the ENV: <code class="highlight"><span class="nv">SSL_DOMAIN</span><span class="o">=</span>example.com</code>.</p>
+<p>The mail-server will select it's certificate from <code>acme.json</code> checking these ENV for a matching FQDN (<em>in order of priority</em>):</p>
 <ol>
 <li><code class="highlight"><span class="si">${</span><span class="nv">SSL_DOMAIN</span><span class="si">}</span></code></li>
 <li><code class="highlight"><span class="si">${</span><span class="nv">HOSTNAME</span><span class="si">}</span></code></li>
 <li><code class="highlight"><span class="si">${</span><span class="nv">DOMAINNAME</span><span class="si">}</span></code></li>
 </ol>
-<p>This setup only comes with one caveat: The domain has to be configured on another service for <a href="https://github.com/containous/traefik">Traefik</a> to actually request it from Let'sEncrypt, i.e. <a href="https://github.com/containous/traefik">Traefik</a> will not issue a certificate without a service / router demanding it.</p>
-<details class="example" open="open"><summary>Example Code</summary><p>Here is an example setup for <a href="https://docs.docker.com/compose/"><code>docker-compose</code></a>:</p>
+<p>This setup only comes with one caveat: The domain has to be configured on another service for <a href="https://github.com/containous/traefik">Traefik</a> to actually request it from <em>Let's Encrypt</em>, i.e. <a href="https://github.com/containous/traefik">Traefik</a> will not issue a certificate without a service / router demanding it.</p>
+<details class="example" open="open">
+<summary>Example Code</summary>
+<p>Here is an example setup for <a href="https://docs.docker.com/compose/"><code>docker-compose</code></a>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3.8&#39;</span>
 <span class="nt">services</span><span class="p">:</span>
   <span class="nt">mailserver</span><span class="p">:</span>
@@ -2114,7 +2199,7 @@ docker run --detach <span class="se">\</span>
        <span class="p p-Indicator">-</span> <span class="s">&quot;traefik.http.routers.whoami.rule=Host(`mail.example.com`)&quot;</span>
 </code></pre></div>
 </details>
-<h2 id="self-signed-certificates"><a class="toclink" href="#self-signed-certificates">Self-Signed Certificates</a></h2>
+<h3 id="self-signed-certificates"><a class="toclink" href="#self-signed-certificates">Self-Signed Certificates</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Use self-signed certificates only for testing purposes!</p>
@@ -2125,9 +2210,9 @@ docker run --detach <span class="se">\</span>
 <li><code>&lt;FQDN&gt;-cert.pem</code></li>
 <li><code>demoCA/cacert.pem</code></li>
 </ul>
-<p>Where <code>&lt;FQDN&gt;</code> is the <a href="https://en.wikipedia.org/wiki/Fully_qualified_domain_name">FQDN</a> assigned to <code>docker-mailserver</code> (<em>eg: <code>mail.example.com</code> (FQDN) =&gt; <code>mail</code> (hostname) + <code>example.com</code> (domainname)</em>) via <code>docker run</code> command or <code>docker-compose.yml</code> config.</p>
+<p>Where <code>&lt;FQDN&gt;</code> is the FQDN you've configured for your <code>docker-mailserver</code> container.</p>
 <p>Add <code>SSL_TYPE=self-signed</code> to your <code>docker-mailserver</code> environment variables. Postfix and Dovecot will be configured to use the provided certificate (<em><code>.pem</code> files above</em>) during container startup.</p>
-<h3 id="generating-a-self-signed-certificate"><a class="toclink" href="#generating-a-self-signed-certificate">Generating a self-signed certificate</a></h3>
+<h4 id="generating-a-self-signed-certificate"><a class="toclink" href="#generating-a-self-signed-certificate">Generating a self-signed certificate</a></h4>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Since <code>docker-mailserver</code> v10, support in <code>setup.sh</code> for generating a <em>self-signed SSL certificate</em> internally was removed.</p>
@@ -2167,7 +2252,7 @@ docker run --rm -it <span class="se">\</span>
   --entrypoint <span class="s2">&quot;/tmp/step-ca/generate-certs.sh&quot;</span> <span class="se">\</span>
   smallstep/step-ca
 </code></pre></div>
-<h2 id="bring-your-own-certificates"><a class="toclink" href="#bring-your-own-certificates">Bring Your Own Certificates</a></h2>
+<h3 id="bring-your-own-certificates"><a class="toclink" href="#bring-your-own-certificates">Bring Your Own Certificates</a></h3>
 <p>You can also provide your own certificate files. Add these entries to your <code>docker-compose.yml</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">volumes</span><span class="p">:</span>
   <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">./docker-data/dms/custom-certs/:/tmp/dms/custom-certs/:ro</span>
@@ -2322,13 +2407,6 @@ openssl s_client <span class="se">\</span>
 <h2 id="custom-dh-parameters"><a class="toclink" href="#custom-dh-parameters">Custom DH Parameters</a></h2>
 <p>By default <code>docker-mailserver</code> uses <a href="https://github.com/internetstandards/dhe_groups"><code>ffdhe4096</code></a> from <a href="https://datatracker.ietf.org/doc/html/rfc7919">IETF RFC 7919</a>. These are standardized pre-defined DH groups and the only available DH groups for TLS 1.3. It is <a href="https://crypto.stackexchange.com/questions/29926/what-diffie-hellman-parameters-should-i-use">discouraged to generate your own DH parameters</a> as it is often less secure.</p>
 <p>Despite this, if you must use non-standard DH parameters or you would like to swap <code>ffdhe4096</code> for a different group (eg <code>ffdhe2048</code>); Add your own PEM encoded DH params file via a volume to <code>/tmp/docker-mailserver/dhparams.pem</code>. This will replace DH params for both Dovecot and Postfix services during container startup.</p>
-                
-                  
-                
-              
-              
-                
-
 
               
             </article>
@@ -2342,8 +2420,7 @@ openssl s_client <span class="se">\</span>
         
       </main>
       
-        
-<footer class="md-footer">
+        <footer class="md-footer">
   
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
@@ -2382,20 +2459,19 @@ openssl s_client <span class="se">\</span>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
-      <div class="md-footer-copyright">
-        
-          <div class="md-footer-copyright__highlight">
-            <p>&copy <a href="https://github.com/docker-mailserver"><em>Docker Mailserver Organization</em></a><br/><span>This project is licensed under the MIT license.</span></p>
-          </div>
-        
-        
-          Made with
-          <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-            Material for MkDocs
-          </a>
-        
-        
-      </div>
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      <p>&copy <a href="https://github.com/docker-mailserver"><em>Docker Mailserver Organization</em></a><br/><span>This project is licensed under the MIT license.</span></p>
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
       
     </div>
   </div>
@@ -2405,10 +2481,10 @@ openssl s_client <span class="se">\</span>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.top", "navigation.expand", "navigation.instant"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.8397ff9e.min.js", "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.top", "navigation.expand", "navigation.instant", "content.code.annotate"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.c7dec7e7.min.js", "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.f89c2efe.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.da79ceb7.min.js"></script>
       
     
   </body>
