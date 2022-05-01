@@ -15,8 +15,13 @@ title: Environment Variables
 
 ##### DMS_DEBUG
 
-- **0** => Debug disabled
-- 1     => Enables debug on startup
+**This environment variable was removed in `v11.0.0`!** Use `LOG_LEVEL` instead.
+
+##### LOG_LEVEL
+
+Set the log level for DMS. This is mostly relevant for container startup scripts and change detection event feedback.
+
+Valid values (in order of increasing verbosity) are: `error`, `warn`, `info`, `debug` and `trace`. The default log level is `info`.
 
 ##### SUPERVISOR_LOGLEVEL
 
@@ -46,6 +51,10 @@ Set different options for mynetworks option (can be overwrite in postfix-main.cf
 - connected-networks => Add all connected docker networks (ipv4 only).
 
 Note: you probably want to [set `POSTFIX_INET_PROTOCOLS=ipv4`](#postfix_inet_protocols) to make it work fine with Docker.
+
+##### TZ
+
+Set the timezone. If this variable is unset, the container runtime will try to detect the time using `/etc/localtime`, which you can alternatively mount into the container. The value of this variable must follow the pattern `AREA/ZONE`, i.e. of you want to use Germany's time zone, use `Europe/Berlin`. You can lookup all available timezones [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List).
 
 ##### ENABLE_AMAVIS
 
@@ -95,7 +104,7 @@ cap_add:
   - NET_ADMIN
 ```
 
-Otherwise, `iptables` won't be able to ban IPs.
+Otherwise, `nftables` won't be able to ban IPs.
 
 ##### FAIL2BAN_BLOCKTYPE
 
@@ -317,11 +326,11 @@ Defines who sends reports (if they are enabled).
 
 ##### LOGROTATE_INTERVAL
 
-Changes the interval in which a report is being sent.
+Changes the interval in which log files are rotated.
 
-- **weekly** => Rotate weekly.
-- daily => Rotate daily.
-- monthly => Rotate monthly.
+- **weekly** => Rotate log files weekly
+- daily => Rotate log files daily
+- monthly => Rotate log files monthly
 
 !!! note
 

@@ -29,7 +29,6 @@ function setup_file() {
   docker run -d --name mail_with_ldap \
     -v "${PRIVATE_CONFIG}:/tmp/docker-mailserver" \
     -v "$(pwd)/test/test-files:/tmp/docker-mailserver-test:ro" \
-    -e DMS_DEBUG=0 \
     -e DOVECOT_PASS_FILTER="(&(objectClass=PostfixBookMailAccount)(uniqueIdentifier=%n))" \
     -e DOVECOT_TLS=no \
     -e DOVECOT_USER_FILTER="(&(objectClass=PostfixBookMailAccount)(uniqueIdentifier=%n))" \
@@ -230,7 +229,7 @@ function teardown_file() {
 
 @test "checking pflogsum delivery" {
   # checking default sender is correctly set when env variable not defined
-  run docker exec mail_with_ldap grep "mailserver-report@${DOMAIN}" /etc/logrotate.d/maillog
+  run docker exec mail_with_ldap grep "mailserver-report@${FQDN_MAIL}" /etc/logrotate.d/maillog
   assert_success
 
   # checking default logrotation setup

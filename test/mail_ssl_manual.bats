@@ -21,7 +21,7 @@ function setup_file() {
     docker run -d --name mail_manual_ssl \
         --volume "${PRIVATE_CONFIG}/:/tmp/docker-mailserver/" \
         --volume "$(pwd)/test/test-files/ssl/${DOMAIN_SSL_MANUAL}/with_ca/ecdsa/:/config/ssl/:ro" \
-        --env DMS_DEBUG=1 \
+        --env LOG_LEVEL='trace' \
         --env SSL_TYPE='manual' \
         --env TLS_LEVEL='modern' \
         --env SSL_KEY_PATH="${SSL_KEY_PATH}" \
@@ -101,11 +101,9 @@ function teardown_file() {
 @test "checking ssl: manual cert changes are picked up by check-for-changes" {
     printf 'someThingsChangedHere' \
       >>"$(pwd)/test/test-files/ssl/${DOMAIN_SSL_MANUAL}/with_ca/ecdsa/key.ecdsa.pem"
-    sleep 10
 
-    run docker exec mail_manual_ssl /bin/bash -c "supervisorctl tail -3000 changedetector"
-    assert_output --partial 'Change detected'
-    assert_output --partial 'Manual certificates have changed'
+    run timeout 15 docker exec mail_manual_ssl bash -c "tail -F /var/log/supervisor/changedetector.log | sed '/Manual certificates have changed/ q'"
+    assert_success
 
     sed -i '/someThingsChangedHere/d' "$(pwd)/test/test-files/ssl/${DOMAIN_SSL_MANUAL}/with_ca/ecdsa/key.ecdsa.pem"
 }
