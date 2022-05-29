@@ -3,7 +3,7 @@
 # shellcheck source=../scripts/helpers/index.sh
 source /usr/local/bin/helpers/index.sh
 
-DATABASE='/tmp/docker-mailserver/postfix-virtual.cf'
+DATABASE=${DATABASE:-/tmp/docker-mailserver/postfix-virtual.cf}
 
 function __usage
 {
@@ -36,12 +36,12 @@ function __usage
 EMAIL="${1}"
 RECIPIENT="${2}"
 
-[[ -z ${EMAIL} ]] && { __usage ; _exit_with_error 'No alias specified' ; }
-[[ -z ${RECIPIENT} ]] && { __usage ; _exit_with_error 'No recipient specified' ; }
+[[ -z ${EMAIL} ]] && { __usage ; _errex 'No alias specified' ; }
+[[ -z ${RECIPIENT} ]] && { __usage ; _errex 'No recipient specified' ; }
 
 grep \
   -qi "^$(_escape "${EMAIL}")[a-zA-Z@.\ ]*$(_escape "${RECIPIENT}")" \
-  "${DATABASE}" 2>/dev/null && _exit_with_error "Alias \"${EMAIL} ${RECIPIENT}\" already exists"
+  "${DATABASE}" 2>/dev/null && _errex "Alias \"${EMAIL} ${RECIPIENT}\" already exists"
 
 if grep -qi "^$(_escape "${EMAIL}")" "${DATABASE}" 2>/dev/null
 then

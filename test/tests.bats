@@ -15,6 +15,7 @@ setup_file() {
     -v "$(pwd)/test/onedir":/var/mail-state \
     -e AMAVIS_LOGLEVEL=2 \
     -e CLAMAV_MESSAGE_SIZE_LIMIT=30M \
+    -e DMS_DEBUG=0 \
     -e ENABLE_CLAMAV=1 \
     -e ENABLE_MANAGESIEVE=1 \
     -e ENABLE_QUOTAS=1 \
@@ -859,8 +860,6 @@ EOF
 }
 
 @test "checking quota: warn message received when quota exceeded" {
-  skip 'disabled as it fails randomly: https://github.com/docker-mailserver/docker-mailserver/pull/2511'
-
   wait_for_changes_to_be_detected_in_container mail
 
   # create user
@@ -936,13 +935,13 @@ EOF
 # --- setup.sh ----------------------------------
 # -----------------------------------------------
 
-@test "checking setup.sh: show usage when no arguments provided" {
+@test "setup.sh :: exit with error when no arguments provided" {
   run ./setup.sh
-  assert_success
-  assert_output --partial "This is the main administration script that you use for all your interactions with"
+  assert_failure
+  assert_line --index 0 --partial "The command '' is invalid."
 }
 
-@test "checking setup.sh: exit with error when wrong arguments provided" {
+@test "setup.sh :: exit with error when wrong arguments provided" {
   run ./setup.sh lol troll
   assert_failure
   assert_line --index 0 --partial "The command 'lol troll' is invalid."
@@ -1115,7 +1114,7 @@ EOF
   assert_failure
 }
 
-@test "checking setup.sh: setup.sh config dkim help correctly displayed" {
+@test "setup.sh :: setup.sh config dkim help correctly displayed" {
   run ./setup.sh -c mail config dkim help
   assert_success
   assert_line --index 3 --partial "    open-dkim - configure DomainKeys Identified Mail (DKIM)"

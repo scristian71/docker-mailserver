@@ -26,7 +26,7 @@ jobs:
       NETLIFY_SITE_PREFIX: pullrequest-${{ github.event.pull_request.number }}
       NETLIFY_SITE_NAME: dms-doc-previews
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2.4.0
 
       - name: 'Build with mkdocs-material via Docker'
         working-directory: docs
@@ -70,7 +70,7 @@ jobs:
           tar --zstd -cf artifact.tar.zst pr.env ${{ env.BUILD_DIR }}
 
       - name: 'Upload artifact for workflow transfer'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: preview-build
           path: artifact.tar.zst

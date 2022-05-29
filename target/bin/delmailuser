@@ -8,10 +8,10 @@
 # shellcheck source=../scripts/helpers/index.sh
 source /usr/local/bin/helpers/index.sh
 
-DATABASE='/tmp/docker-mailserver/postfix-accounts.cf'
-ALIAS_DATABASE='/tmp/docker-mailserver/postfix-virtual.cf'
-QUOTA_DATABASE='/tmp/docker-mailserver/dovecot-quotas.cf'
-MAILDEL='false'
+DATABASE=${DATABASE:-/tmp/docker-mailserver/postfix-accounts.cf}
+ALIAS_DATABASE="/tmp/docker-mailserver/postfix-virtual.cf"
+QUOTA_DATABASE="/tmp/docker-mailserver/dovecot-quotas.cf"
+MAILDEL=false
 
 function __usage
 {
@@ -55,31 +55,31 @@ fi
 
 while getopts ":yYh" OPT
 do
-  case "${OPT}" in
-    ( 'y' | 'Y' )
+  case ${OPT} in
+    y | Y )
       MAILDEL=true
       ;;
 
-    ( 'h' )
+    h )
       __usage
       exit 0
       ;;
 
-    ( * )
+    * )
       __usage
-      _exit_with_error "The option '${OPT}' is unknown"
+      _errex "The option ${OPT} is unknown."
       ;;
 
   esac
 done
 shift $((OPTIND-1))
 
-[[ -z ${*} ]] && { __usage ; _exit_with_error 'No user specified' ; }
+[[ -z ${*} ]] && { __usage ; _errex "No user specifed" ; }
 [[ -s ${DATABASE} ]] || exit 0
 
 if ! ${MAILDEL}
 then
-  read -r -p "Do you want to delete the mailbox as well (removing all mails)? [Y/n] " MAILDEL_CHOSEN
+  read -r -p "Do you want to delete the mailbox as well (removing all mails) ? [Y/n] " MAILDEL_CHOSEN
   if [[ ${MAILDEL_CHOSEN} =~ (y|Y|yes|Yes) ]] || [[ -z ${MAILDEL_CHOSEN} ]]
   then
     MAILDEL=true
@@ -103,7 +103,7 @@ do
   then
     if ! sedfile --strict -i "/^${EMAIL}|/d" "${DATABASE}"
     then
-      _log 'error' "'${UNESCAPED_EMAIL}' couldn't be deleted in '${DATABASE}'"
+      echo "${UNESCAPED_EMAIL} couldn't be deleted in ${DATABASE}." >&2
       ERROR=true
     fi
   fi
@@ -116,9 +116,9 @@ do
       -e "/ ${EMAIL}$/d" -e "s/,${EMAIL}//g" -e "s/${EMAIL},//g" \
       "${ALIAS_DATABASE}"
     then
-      _log 'info' "'${UNESCAPED_EMAIL}' and potential aliases deleted"
+      echo "${UNESCAPED_EMAIL} and potential aliases deleted."
     else
-      _log 'error' "Aliases for '${UNESCAPED_EMAIL}' couldn't be deleted in '${ALIAS_DATABASE}'"
+      echo "Aliases for ${UNESCAPED_EMAIL} couldn't be deleted in ${ALIAS_DATABASE}." >&2
       ERROR=true
     fi
   fi
@@ -128,7 +128,7 @@ do
   then
     if ! sedfile --strict -i -e "/^${EMAIL}:.*$/d" "${QUOTA_DATABASE}"
     then
-      _log 'warn' "Quota for '${UNESCAPED_EMAIL}' couldn't be deleted in '${QUOTA_DATABASE}'"
+      echo "Quota for ${UNESCAPED_EMAIL} couldn't be deleted in ${QUOTA_DATABASE}." >&2
     fi
   fi
 
@@ -144,18 +144,17 @@ use 'sudo docker exec mailserver rm -R /var/mail/${DOMAIN}/${USER}'"
   then
     if rm -R "/var/mail/${DOMAIN}/${USER}"
     then
-      _log 'info' 'Mailbox deleted'
+      echo "Mailbox deleted."
     else
-      _log 'error' 'Mailbox could not be deleted'
+      echo "Mailbox couldn't be deleted." >&2
       ERROR=true
     fi
-    rmdir "/var/mail/${DOMAIN}" &>/dev/null
+    rmdir "/var/mail/${DOMAIN}" 2>/dev/null || true
   else
-    log 'error' "Mailbox directory '/var/mail/${DOMAIN}/${USER}' did not exist"
+    echo "Mailbox directory '/var/mail/${DOMAIN}/${USER}' did not exist." >&2
     ERROR=true
   fi
 
-  ${ERROR} && _exit_with_error 'See the messages above.'
+  ${ERROR} && _errex 'See the messages above.'
 done
-
 exit 0

@@ -131,10 +131,10 @@ NAME
 
 #### Starting for the first time
 
-On first start, you will need to add at least one email account (unless you're using LDAP). You have two minutes to do so, otherwise DMS will shutdown and restart. You can add accounts with the following two methods:
+On first start, you will likely see an error stating that there are no mail accounts and the container will exit. You must now do one of two things:
 
-1. Use `setup.sh`: `./setup.sh email add <user@domain>`
-2. Run the command directly in the container: `docker exec -ti <CONTAINER NAME> setup email add <user@domain>`
+1. Use `setup.sh` to help you: `./setup.sh email add <user@domain> <password>`. You may need  the `-c` option to provide the local path for persisting configuration (_a directory that mounts to `/tmp/docker-mailserver` inside the container_). This will spin up a new container, mount your configuration volume, and create your first account.
+2. Execute the complete command yourself: `docker run --rm -v "${PWD}/docker-data/dms/config/:/tmp/docker-mailserver/" docker.io/mailserver/docker-mailserver setup email add <user@domain> <password>`. Make sure to mount the correct configuration directory.
 
 You can then proceed by creating the postmaster alias and by creating DKIM keys.
 
@@ -257,6 +257,7 @@ services:
       - ENABLE_POSTGREY=1
       - ENABLE_SASLAUTHD=0
       - ONE_DIR=1
+      - DMS_DEBUG=0
     cap_add:
       - NET_ADMIN
       - SYS_PTRACE
@@ -294,6 +295,7 @@ services:
       - ENABLE_FAIL2BAN=1
       - ENABLE_POSTGREY=1
       - ONE_DIR=1
+      - DMS_DEBUG=0
       - ENABLE_LDAP=1
       - LDAP_SERVER_HOST=ldap # your ldap container/IP/ServerName
       - LDAP_SEARCH_BASE=ou=people,dc=localhost,dc=localdomain
