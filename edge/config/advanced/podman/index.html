@@ -1181,6 +1181,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dovecot-master-accounts/" class="md-nav__link">
+        Dovecot Master Accounts
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -1662,7 +1676,7 @@ Make sure to read the related documentation.</p>
 <div class="highlight"><pre><span></span><code>systemctl <span class="nb">enable</span> --now podman.socket
 </code></pre></div>
 <p>This will create a unix socket locate under <code>/run/podman/podman.sock</code>, which is the entrypoint of Podman's API. Now, configure docker-mailserver and start it.</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">DOCKER_HOST</span><span class="o">=</span><span class="s2">&quot;unix:/run/podman/podman.sock&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">DOCKER_HOST</span><span class="o">=</span><span class="s2">&quot;unix:///run/podman/podman.sock&quot;</span>
 docker-compose up -d mailserver
 docker-compose ps
 </code></pre></div>
@@ -1699,7 +1713,7 @@ systemctl <span class="nb">enable</span> --now mailserver.service
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;10993:993&quot;</span><span class="w">  </span><span class="c1"># IMAP4 (implicit TLS)</span><span class="w"></span>
 </code></pre></div>
 <p>Then, setup your <code>mailserver.env</code> file follow the documentation and use docker-compose to start the container.</p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">DOCKER_HOST</span><span class="o">=</span><span class="s2">&quot;unix:/var/run/user/1000/podman/podman.sock&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span> <span class="nv">DOCKER_HOST</span><span class="o">=</span><span class="s2">&quot;unix:///var/run/user/</span><span class="k">$(</span>id -u<span class="k">)</span><span class="s2">/podman/podman.sock&quot;</span>
 docker-compose up -d mailserver
 docker-compose ps
 </code></pre></div>
@@ -1787,13 +1801,13 @@ firewall-cmd --reload
       
       
         
-        <a href="../../../examples/tutorials/basic-installation/" class="md-footer__link md-footer__link--next" aria-label="Next: Basic Installation" rel="next">
+        <a href="../dovecot-master-accounts/" class="md-footer__link md-footer__link--next" aria-label="Next: Dovecot Master Accounts" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Basic Installation
+              Dovecot Master Accounts
             </div>
           </div>
           <div class="md-footer__button md-icon">

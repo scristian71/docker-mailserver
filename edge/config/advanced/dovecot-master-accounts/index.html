@@ -12,14 +12,14 @@
         <meta name="author" content="docker-mailserver (Github Organization)">
       
       
-        <link rel="canonical" href="https://docker-mailserver.github.io/docker-mailserver/edge/config/security/mail_crypt/">
+        <link rel="canonical" href="https://docker-mailserver.github.io/docker-mailserver/edge/config/advanced/dovecot-master-accounts/">
       
       <link rel="icon" href="../../../assets/logo/favicon-32x32.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
     
     
       
-        <title>Security | mail_crypt (email/storage encryption) - Docker Mailserver</title>
+        <title>Advanced | Dovecot master accounts - Docker Mailserver</title>
       
     
     
@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#single-encryption-key-global-method" class="md-skip">
+        <a href="#introduction" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Security | mail_crypt (email/storage encryption)
+              Advanced | Dovecot master accounts
             
           </span>
         </div>
@@ -601,14 +601,12 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" data-md-state="indeterminate" type="checkbox" id="__nav_3_5" checked>
       
       
       
@@ -631,7 +629,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../understanding-the-ports/" class="md-nav__link">
+      <a href="../../security/understanding-the-ports/" class="md-nav__link">
         Understanding the Ports
       </a>
     </li>
@@ -645,7 +643,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ssl/" class="md-nav__link">
+      <a href="../../security/ssl/" class="md-nav__link">
         SSL/TLS
       </a>
     </li>
@@ -659,7 +657,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../fail2ban/" class="md-nav__link">
+      <a href="../../security/fail2ban/" class="md-nav__link">
         Fail2Ban
       </a>
     </li>
@@ -671,48 +669,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Mail Encryption
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../security/mail_crypt/" class="md-nav__link">
         Mail Encryption
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#single-encryption-key-global-method" class="md-nav__link">
-    Single Encryption Key / Global Method
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -790,12 +751,14 @@
               
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_8" data-md-state="indeterminate" type="checkbox" id="__nav_3_8" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_8" type="checkbox" id="__nav_3_8" checked>
       
       
       
@@ -818,7 +781,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/optional-config/" class="md-nav__link">
+      <a href="../optional-config/" class="md-nav__link">
         Optional Configuration
       </a>
     </li>
@@ -858,7 +821,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/maintenance/update-and-cleanup/" class="md-nav__link">
+      <a href="../maintenance/update-and-cleanup/" class="md-nav__link">
         Update and Cleanup
       </a>
     </li>
@@ -905,7 +868,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/override-defaults/dovecot/" class="md-nav__link">
+      <a href="../override-defaults/dovecot/" class="md-nav__link">
         Dovecot
       </a>
     </li>
@@ -919,7 +882,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/override-defaults/postfix/" class="md-nav__link">
+      <a href="../override-defaults/postfix/" class="md-nav__link">
         Postfix
       </a>
     </li>
@@ -933,7 +896,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/override-defaults/user-patches/" class="md-nav__link">
+      <a href="../override-defaults/user-patches/" class="md-nav__link">
         Modifications via Script
       </a>
     </li>
@@ -954,7 +917,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/auth-ldap/" class="md-nav__link">
+      <a href="../auth-ldap/" class="md-nav__link">
         LDAP Authentication
       </a>
     </li>
@@ -968,7 +931,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/mail-sieve/" class="md-nav__link">
+      <a href="../mail-sieve/" class="md-nav__link">
         Email Filtering with Sieve
       </a>
     </li>
@@ -982,7 +945,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/mail-fetchmail/" class="md-nav__link">
+      <a href="../mail-fetchmail/" class="md-nav__link">
         Email Gathering with Fetchmail
       </a>
     </li>
@@ -1022,7 +985,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/mail-forwarding/relay-hosts/" class="md-nav__link">
+      <a href="../mail-forwarding/relay-hosts/" class="md-nav__link">
         Relay Hosts
       </a>
     </li>
@@ -1036,7 +999,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/mail-forwarding/aws-ses/" class="md-nav__link">
+      <a href="../mail-forwarding/aws-ses/" class="md-nav__link">
         AWS SES
       </a>
     </li>
@@ -1057,7 +1020,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/full-text-search/" class="md-nav__link">
+      <a href="../full-text-search/" class="md-nav__link">
         Full-Text Search
       </a>
     </li>
@@ -1071,7 +1034,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/kubernetes/" class="md-nav__link">
+      <a href="../kubernetes/" class="md-nav__link">
         Kubernetes
       </a>
     </li>
@@ -1085,7 +1048,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/ipv6/" class="md-nav__link">
+      <a href="../ipv6/" class="md-nav__link">
         IPv6
       </a>
     </li>
@@ -1099,7 +1062,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/podman/" class="md-nav__link">
+      <a href="../podman/" class="md-nav__link">
         Podman
       </a>
     </li>
@@ -1111,11 +1074,62 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../advanced/dovecot-master-accounts/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Dovecot Master Accounts
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Dovecot Master Accounts
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    Introduction
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logging-in" class="md-nav__link">
+    Logging in
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1478,8 +1492,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#single-encryption-key-global-method" class="md-nav__link">
-    Single Encryption Key / Global Method
+  <a href="#introduction" class="md-nav__link">
+    Introduction
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    Configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logging-in" class="md-nav__link">
+    Logging in
   </a>
   
 </li>
@@ -1496,72 +1524,23 @@
             <article class="md-content__inner md-typeset">
               
                 
-<a href="https://github.com/docker-mailserver/docker-mailserver/edit/master/docs/content/config/security/mail_crypt.md" title="Edit this page" class="md-content__button md-icon">
+<a href="https://github.com/docker-mailserver/docker-mailserver/edit/master/docs/content/config/advanced/dovecot-master-accounts.md" title="Edit this page" class="md-content__button md-icon">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
 </a>
 
 
 
-  <h1>Mail Encryption</h1>
+  <h1>Dovecot Master Accounts</h1>
 
-<div class="admonition info">
-<p class="admonition-title">Info</p>
-<p>The Mail crypt plugin is used to secure email messages stored in a Dovecot system. Messages are encrypted before written to storage and decrypted after reading. Both operations are transparent to the user.</p>
-<p>In case of unauthorized access to the storage backend, the messages will, without access to the decryption keys, be unreadable to the offending party.</p>
-<p>There can be a single encryption key for the whole system or each user can have a key of their own. The used cryptographical methods are widely used standards and keys are stored in portable formats, when possible.</p>
-</div>
-<p>Official Dovecot documentation: <a href="https://doc.dovecot.org/configuration_manual/mail_crypt_plugin/">https://doc.dovecot.org/configuration_manual/mail_crypt_plugin/</a></p>
-<hr />
-<h2 id="single-encryption-key-global-method"><a class="toclink" href="#single-encryption-key-global-method">Single Encryption Key / Global Method</a></h2>
-<ol>
-<li>
-<p>Create <code>10-custom.conf</code> and populate it with the following:</p>
-<div class="highlight"><pre><span></span><code># Enables mail_crypt for all services (imap, pop3, etc)
-mail_plugins = $mail_plugins mail_crypt
-plugin {
-  mail_crypt_global_private_key = &lt;/certs/ecprivkey.pem
-  mail_crypt_global_public_key = &lt;/certs/ecpubkey.pem
-  mail_crypt_save_version = 2
-}
-</code></pre></div>
-</li>
-<li>
-<p>Shutdown your mailserver (<code>docker-compose down</code>)</p>
-</li>
-<li>
-<p>You then need to <a href="https://doc.dovecot.org/configuration_manual/mail_crypt_plugin/#ec-key">generate your global EC key</a>. We named them <code>/certs/ecprivkey.pem</code> and <code>/certs/ecpubkey.pem</code> in step #1.</p>
-</li>
-<li>
-<p>The EC key needs to be available in the container. I prefer to mount a /certs directory into the container: 
-    <div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">mailserver</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker.io/mailserver/docker-mailserver:latest</span><span class="w"></span>
-<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">. . .</span><span class="w"></span>
-<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">- ./certs/:/certs</span><span class="w"></span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">. . .</span><span class="w"></span>
-</code></pre></div></p>
-</li>
-<li>
-<p>While you're editing the <code>docker-compose.yml</code>, add the configuration file:
-    <div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">mailserver</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker.io/mailserver/docker-mailserver:latest</span><span class="w"></span>
-<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">. . .</span><span class="w"></span>
-<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">- ./config/dovecot/10-custom.conf:/etc/dovecot/conf.d/10-custom.conf</span><span class="w"></span>
-<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">- ./certs/:/certs</span><span class="w"></span>
-<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">. . .</span><span class="w"></span>
-</code></pre></div></p>
-</li>
-<li>
-<p>Start the container, monitor the logs for any errors, send yourself a message, and then confirm the file on disk is encrypted:
-    <div class="highlight"><pre><span></span><code>[root@ip-XXXXXXXXXX ~]# cat -A /mnt/efs-us-west-2/maildata/awesomesite.com/me/cur/1623989305.M6vï¿½zï¿½@ï¿½ï¿½ m}ï¿½ï¿½,ï¿½ï¿½9ï¿½ï¿½ï¿½ï¿½B*ï¿½247.us-west-2.compute.inEï¿½ï¿½\Ck*ï¿½@7795,W=7947:2,
-Tï¿½9ï¿½8tï¿½6ï¿½ï¿½ tï¿½ï¿½ï¿½eï¿½Wï¿½ï¿½S   `ï¿½Hï¿½ï¿½Cï¿½Ú¤ ï¿½yeYï¿½ï¿½XZï¿½ï¿½^ï¿½dï¿½/ï¿½ï¿½+ï¿½A
-</code></pre></div></p>
-</li>
-</ol>
-<p>This should be the minimum required for encryption of the mail while in storage.</p>
+<h2 id="introduction"><a class="toclink" href="#introduction">Introduction</a></h2>
+<p>A dovecot master account is able to login as any configured user. This is useful for administrative tasks like hot backups.</p>
+<h2 id="configuration"><a class="toclink" href="#configuration">Configuration</a></h2>
+<p>It is possible to create, update, delete and list dovecot master accounts using <code>setup.sh</code>. See <code>setup.sh help</code> for usage.</p>
+<p>This feature is presently <a href="https://github.com/docker-mailserver/docker-mailserver/pull/2535">not supported with LDAP</a>.</p>
+<h2 id="logging-in"><a class="toclink" href="#logging-in">Logging in</a></h2>
+<p>Once a master account is configured, it is possible to connect to any users mailbox using this account. Log in over POP3/IMAP using the following credential scheme:</p>
+<p>Username: <code>&lt;EMAIL ADDRESS&gt;*&lt;MASTER ACCOUNT NAME&gt;</code></p>
+<p>Password: <code>&lt;MASTER ACCOUNT PASSWORD&gt;</code></p>
 
               
             </article>
@@ -1580,7 +1559,7 @@ Tï¿½9ï¿½8tï¿½6ï¿½ï¿½ tï¿½ï¿½ï¿½eï¿½Wï¿½ï¿½S   `ï¿½Hï¿½ï¿½Cï¿½Ú¤ ï¿½yeYï¿½ï¿½XZï¿
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../fail2ban/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Fail2Ban" rel="prev">
+        <a href="../podman/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Podman" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -1589,20 +1568,20 @@ Tï¿½9ï¿½8tï¿½6ï¿½ï¿½ tï¿½ï¿½ï¿½eï¿½Wï¿½ï¿½S   `ï¿½Hï¿½ï¿½Cï¿½Ú¤ ï¿½yeYï¿½ï¿½XZï¿
               <span class="md-footer__direction">
                 Previous
               </span>
-              Fail2Ban
+              Podman
             </div>
           </div>
         </a>
       
       
         
-        <a href="../../troubleshooting/debugging/" class="md-footer__link md-footer__link--next" aria-label="Next: Debugging" rel="next">
+        <a href="../../../examples/tutorials/basic-installation/" class="md-footer__link md-footer__link--next" aria-label="Next: Basic Installation" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Debugging
+              Basic Installation
             </div>
           </div>
           <div class="md-footer__button md-icon">

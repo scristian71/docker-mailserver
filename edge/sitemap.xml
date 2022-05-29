@@ -36,6 +36,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://docker-mailserver.github.io/docker-mailserver/edge/config/advanced/dovecot-master-accounts/</loc>
+         <lastmod>2022-05-29</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://docker-mailserver.github.io/docker-mailserver/edge/config/advanced/full-text-search/</loc>
          <lastmod>2022-05-29</lastmod>
          <changefreq>daily</changefreq>
