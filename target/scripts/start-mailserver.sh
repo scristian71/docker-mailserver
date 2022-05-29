@@ -1,29 +1,63 @@
 #! /bin/bash
 
+# ------------------------------------------------------------
+# ? >> Sourcing helpers & stacks
+#      1. Helpers
+#      2. Checks
+#      3. Setup
+#      4. Fixes
+#      5. Miscellaneous
+#      6. Daemons
+# ------------------------------------------------------------
+
 # shellcheck source=./helpers/index.sh
 source /usr/local/bin/helpers/index.sh
 
-# shellcheck disable=SC2034
-declare -A VARS
-declare -a FUNCS_SETUP FUNCS_FIX FUNCS_CHECK FUNCS_MISC DAEMONS_START
+# shellcheck source=./startup/check-stack.sh
+source /usr/local/bin/check-stack.sh
 
+# shellcheck source=./startup/setup-stack.sh
+source /usr/local/bin/setup-stack.sh
+
+# shellcheck source=./startup/fixes-stack.sh
+source /usr/local/bin/fixes-stack.sh
+
+# shellcheck source=./startup/misc-stack.sh
+source /usr/local/bin/misc-stack.sh
+
+# shellcheck source=./startup/daemons-stack.sh
+source /usr/local/bin/daemons-stack.sh
+
+# ------------------------------------------------------------
+# ? << Sourcing helpers & stacks
+# --
+# ? >> Setup Supervisor & DNS names
+# ------------------------------------------------------------
+
+# Setup supervisord as early as possible
+declare -A VARS
+VARS[SUPERVISOR_LOGLEVEL]="${SUPERVISOR_LOGLEVEL:=warn}"
+
+_setup_supervisor
 _obtain_hostname_and_domainname
 
 # ------------------------------------------------------------
-# ? <<
+# ? << Setup Supervisor & DNS names
 # --
 # ? >> Setup of default and global values / variables
 # ------------------------------------------------------------
 
+# shellcheck disable=SC2034
+declare -a FUNCS_SETUP FUNCS_FIX FUNCS_CHECK FUNCS_MISC DAEMONS_START
+
 # These variables must be defined first; They are used as default values for other variables.
 VARS[POSTMASTER_ADDRESS]="${POSTMASTER_ADDRESS:=postmaster@${DOMAINNAME}}"
 VARS[REPORT_RECIPIENT]="${REPORT_RECIPIENT:=${POSTMASTER_ADDRESS}}"
-VARS[REPORT_SENDER]="${REPORT_SENDER:=mailserver-report@${DOMAINNAME}}"
+VARS[REPORT_SENDER]="${REPORT_SENDER:=mailserver-report@${HOSTNAME}}"
 
 VARS[AMAVIS_LOGLEVEL]="${AMAVIS_LOGLEVEL:=0}"
 VARS[CLAMAV_MESSAGE_SIZE_LIMIT]="${CLAMAV_MESSAGE_SIZE_LIMIT:=25M}" # 25 MB
 VARS[DEFAULT_RELAY_HOST]="${DEFAULT_RELAY_HOST:=}"
-VARS[DMS_DEBUG]="${DMS_DEBUG:=0}"
 VARS[DOVECOT_INET_PROTOCOLS]="${DOVECOT_INET_PROTOCOLS:=all}"
 VARS[DOVECOT_MAILBOX_FORMAT]="${DOVECOT_MAILBOX_FORMAT:=maildir}"
 VARS[DOVECOT_TLS]="${DOVECOT_TLS:=no}"
@@ -46,6 +80,7 @@ VARS[FAIL2BAN_BLOCKTYPE]="${FAIL2BAN_BLOCKTYPE:=drop}"
 VARS[FETCHMAIL_PARALLEL]="${FETCHMAIL_PARALLEL:=0}"
 VARS[FETCHMAIL_POLL]="${FETCHMAIL_POLL:=300}"
 VARS[LDAP_START_TLS]="${LDAP_START_TLS:=no}"
+VARS[LOG_LEVEL]="${LOG_LEVEL:=info}"
 VARS[LOGROTATE_INTERVAL]="${LOGROTATE_INTERVAL:=weekly}"
 VARS[LOGWATCH_INTERVAL]="${LOGWATCH_INTERVAL:=none}"
 VARS[LOGWATCH_RECIPIENT]="${LOGWATCH_RECIPIENT:=${REPORT_RECIPIENT}}"
@@ -76,8 +111,8 @@ VARS[SPAMASSASSIN_SPAM_TO_INBOX]="${SPAMASSASSIN_SPAM_TO_INBOX:=1}"
 VARS[SPOOF_PROTECTION]="${SPOOF_PROTECTION:=0}"
 VARS[SRS_SENDER_CLASSES]="${SRS_SENDER_CLASSES:=envelope_sender}"
 VARS[SSL_TYPE]="${SSL_TYPE:=}"
-VARS[SUPERVISOR_LOGLEVEL]="${SUPERVISOR_LOGLEVEL:=warn}"
 VARS[TLS_LEVEL]="${TLS_LEVEL:=modern}"
+VARS[TZ]="${TZ:=}"
 VARS[UPDATE_CHECK_INTERVAL]="${UPDATE_CHECK_INTERVAL:=1d}"
 VARS[VIRUSMAILS_DELETE_DELAY]="${VIRUSMAILS_DELETE_DELAY:=7}"
 
@@ -87,20 +122,22 @@ VARS[VIRUSMAILS_DELETE_DELAY]="${VIRUSMAILS_DELETE_DELAY:=7}"
 # ? >> Registering functions
 # ------------------------------------------------------------
 
-function register_functions
+function _register_functions
 {
-  _notify 'tasklog' 'Initializing setup'
-  _notify 'task' 'Registering functions'
+  _log 'info' 'Initializing setup'
+  _log 'debug' 'Registering functions'
 
   # ? >> Checks
 
   _register_check_function '_check_hostname'
+  _register_check_function '_check_log_level'
 
   # ? >> Setup
 
-  _register_setup_function '_setup_supervisor'
   _register_setup_function '_setup_default_vars'
   _register_setup_function '_setup_file_permissions'
+
+  [[ -n ${TZ} ]] && _register_setup_function '_setup_timezone'
 
   if [[ ${SMTP_ONLY} -ne 1 ]]
   then
@@ -140,10 +177,16 @@ function register_functions
   # needs to come after _setup_postfix_aliases
   [[ ${SPOOF_PROTECTION} -eq 1 ]] && _register_setup_function '_setup_spoof_protection'
 
+  if [[ ${ENABLE_FETCHMAIL} -eq 1 ]]
+  then
+    _register_setup_function '_setup_fetchmail'
+    [[ ${FETCHMAIL_PARALLEL} -eq 1 ]] && _register_setup_function '_setup_fetchmail_parallel'
+  fi
+
   if [[ ${ENABLE_SRS} -eq 1  ]]
   then
     _register_setup_function '_setup_SRS'
-    _register_start_daemon '_start_daemons_postsrsd'
+    _register_start_daemon '_start_daemon_postsrsd'
   fi
 
   _register_setup_function '_setup_postfix_access_control'
@@ -174,106 +217,80 @@ function register_functions
 
   # ? >> Daemons
 
-  _register_start_daemon '_start_daemons_cron'
-  _register_start_daemon '_start_daemons_rsyslog'
+  _register_start_daemon '_start_daemon_cron'
+  _register_start_daemon '_start_daemon_rsyslog'
 
-  [[ ${SMTP_ONLY} -ne 1 ]] && _register_start_daemon '_start_daemons_dovecot'
-  [[ ${ENABLE_UPDATE_CHECK} -eq 1 ]] && _register_start_daemon '_start_daemons_update_check'
+  [[ ${SMTP_ONLY} -ne 1 ]] && _register_start_daemon '_start_daemon_dovecot'
+  [[ ${ENABLE_UPDATE_CHECK} -eq 1 ]] && _register_start_daemon '_start_daemon_update_check'
 
   # needs to be started before SASLauthd
-  _register_start_daemon '_start_daemons_opendkim'
-  _register_start_daemon '_start_daemons_opendmarc'
+  _register_start_daemon '_start_daemon_opendkim'
+  _register_start_daemon '_start_daemon_opendmarc'
 
   # needs to be started before postfix
-  [[ ${ENABLE_POSTGREY} -eq 1 ]] &&	_register_start_daemon '_start_daemons_postgrey'
+  [[ ${ENABLE_POSTGREY} -eq 1 ]] &&	_register_start_daemon '_start_daemon_postgrey'
 
-  _register_start_daemon '_start_daemons_postfix'
+  _register_start_daemon '_start_daemon_postfix'
 
   # needs to be started after postfix
-  [[ ${ENABLE_SASLAUTHD} -eq 1 ]] && _register_start_daemon '_start_daemons_saslauthd'
-  [[ ${ENABLE_FAIL2BAN} -eq 1 ]] &&	_register_start_daemon '_start_daemons_fail2ban'
-  [[ ${ENABLE_FETCHMAIL} -eq 1 ]] && _register_start_daemon '_start_daemons_fetchmail'
-  [[ ${ENABLE_CLAMAV} -eq 1 ]] &&	_register_start_daemon '_start_daemons_clamav'
-  [[ ${ENABLE_LDAP} -eq 0 ]] && _register_start_daemon '_start_changedetector'
-  [[ ${ENABLE_AMAVIS} -eq 1 ]] && _register_start_daemon '_start_daemons_amavis'
+  [[ ${ENABLE_SASLAUTHD} -eq 1 ]] && _register_start_daemon '_start_daemon_saslauthd'
+  [[ ${ENABLE_FAIL2BAN} -eq 1 ]] &&	_register_start_daemon '_start_daemon_fail2ban'
+  [[ ${ENABLE_FETCHMAIL} -eq 1 ]] && _register_start_daemon '_start_daemon_fetchmail'
+  [[ ${ENABLE_CLAMAV} -eq 1 ]] &&	_register_start_daemon '_start_daemon_clamav'
+  [[ ${ENABLE_LDAP} -eq 0 ]] && _register_start_daemon '_start_daemon_changedetector'
+  [[ ${ENABLE_AMAVIS} -eq 1 ]] && _register_start_daemon '_start_daemon_amavis'
 }
 
 function _register_start_daemon
 {
   DAEMONS_START+=("${1}")
-  _notify 'inf' "${1}() registered"
+  _log 'trace' "${1}() registered"
 }
 
 function _register_setup_function
 {
   FUNCS_SETUP+=("${1}")
-  _notify 'inf' "${1}() registered"
+  _log 'trace' "${1}() registered"
 }
 
 function _register_fix_function
 {
   FUNCS_FIX+=("${1}")
-  _notify 'inf' "${1}() registered"
+  _log 'trace' "${1}() registered"
 }
 
 function _register_check_function
 {
   FUNCS_CHECK+=("${1}")
-  _notify 'inf' "${1}() registered"
+  _log 'trace' "${1}() registered"
 }
 
 function _register_misc_function
 {
   FUNCS_MISC+=("${1}")
-  _notify 'inf' "${1}() registered"
+  _log 'trace' "${1}() registered"
 }
 
 # ------------------------------------------------------------
 # ? << Registering functions
 # --
-# ? >> Sourcing all stacks
-#      1. Checks
-#      2. Setup
-#      3. Fixes
-#      4. Miscellaneous
-#      5. Daemons
+# ? >> Executing all stacks / actual start of DMS
 # ------------------------------------------------------------
 
-# shellcheck source=./startup/check-stack.sh
-source /usr/local/bin/check-stack.sh
+_log 'info' "Welcome to docker-mailserver $(</VERSION)"
 
-# shellcheck source=./startup/setup-stack.sh
-source /usr/local/bin/setup-stack.sh
+_register_functions
+_check
+_setup
+[[ ${LOG_LEVEL} =~ (debug|trace) ]] && print-environment
+_apply_fixes
+_start_misc
+_start_daemons
 
-# shellcheck source=./startup/fixes-stack.sh
-source /usr/local/bin/fixes-stack.sh
+# marker to check if container was restarted
+date >/CONTAINER_START
 
-# shellcheck source=./startup/misc-stack.sh
-source /usr/local/bin/misc-stack.sh
-
-# shellcheck source=./startup/daemons-stack.sh
-source /usr/local/bin/daemons-stack.sh
-
-# ------------------------------------------------------------
-# ? << Sourcing all stacks
-# --
-# ? >> Executing all stacks
-# ------------------------------------------------------------
-
-_notify 'tasklog' "Welcome to docker-mailserver $(</VERSION)"
-
-register_functions
-check
-setup
-[[ ${DMS_DEBUG} -eq 1 ]] && print-environment
-fix
-start_misc
-start_daemons
-
-# marker to check, if container was restarted
-date > /CONTAINER_START
-
-_notify 'tasklog' "${HOSTNAME} is up and running"
+_log 'info' "${HOSTNAME} is up and running"
 
 touch /var/log/mail/mail.log
 tail -Fn 0 /var/log/mail/mail.log

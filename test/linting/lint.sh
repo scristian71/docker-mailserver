@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /bin/bash
 
 # version   v0.2.0 unstable
 # executed  by Make during CI or manually
@@ -6,14 +6,8 @@
 
 SCRIPT="lint.sh"
 
-if [[ "$(uname)" == "Darwin" ]]
-then
-  readlink() {
-    greadlink "${@:+$@}" # Requires coreutils
-  }
-fi
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
-REPO_ROOT="$(realpath "${SCRIPT_DIR}"/../../)"
+REPO_ROOT=$(realpath "${SCRIPT_DIR}"/../../)
 
 HADOLINT_VERSION=2.8.0
 ECLINT_VERSION=2.3.5
@@ -58,7 +52,7 @@ function __log_success
 
 function __in_path
 {
-  command -v "${@:+$@}" &>/dev/null && return 0 ; return 1 ;
+  command -v "${@}" &>/dev/null && return 0 ; return 1 ;
 }
 
 function _eclint
@@ -99,16 +93,14 @@ function _shellcheck
   local SCRIPT='SHELLCHECK'
 
   # File paths for shellcheck:
-  F_SH="$(find . -type f -iname '*.sh' \
+  F_SH=$(find . -type f -iname '*.sh' \
     -not -path './test/bats/*' \
     -not -path './test/test_helper/*' \
     -not -path './target/docker-configomat/*'
-  )"
-  # macOS lacks parity for `-executable` but presently produces the same results: https://stackoverflow.com/a/4458361
-  [[ "$(uname)" == "Darwin" ]] && FIND_EXEC="-perm -711" || FIND_EXEC="-executable"
+  )
   # shellcheck disable=SC2248
-  F_BIN="$(find 'target/bin' ${FIND_EXEC} -type f)"
-  F_BATS="$(find 'test' -maxdepth 1 -type f -iname '*.bats')"
+  F_BIN=$(find 'target/bin' -type f -not -name '*.py')
+  F_BATS=$(find 'test' -maxdepth 1 -type f -iname '*.bats')
 
   # This command is a bit easier to grok as multi-line.
   # There is a `.shellcheckrc` file, but it's only supports half of the options below, thus kept as CLI:
@@ -164,4 +156,4 @@ function __main
   esac
 }
 
-__main "${@:+$@}" || exit ${?}
+__main "${@}" || exit ${?}
