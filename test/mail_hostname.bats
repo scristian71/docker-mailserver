@@ -3,34 +3,31 @@ load 'test_helper/common'
 
 function setup_file() {
   local PRIVATE_CONFIG
+
   PRIVATE_CONFIG=$(duplicate_config_for_container . mail_override_hostname)
-	docker run --rm -d --name mail_override_hostname \
-		-v "${PRIVATE_CONFIG}":/tmp/docker-mailserver \
-		-v "$(pwd)/test/test-files":/tmp/docker-mailserver-test:ro \
-		-e PERMIT_DOCKER=network \
-		-e DMS_DEBUG=0 \
-		-e ENABLE_SRS=1 \
-		-e OVERRIDE_HOSTNAME=mail.my-domain.com \
-		-h unknown.domain.tld \
-		-t "${NAME}"
+  docker run --rm -d --name mail_override_hostname \
+    -v "${PRIVATE_CONFIG}":/tmp/docker-mailserver \
+    -v "$(pwd)/test/test-files":/tmp/docker-mailserver-test:ro \
+    -e PERMIT_DOCKER=network \
+    -e ENABLE_SRS=1 \
+    -e OVERRIDE_HOSTNAME=mail.my-domain.com \
+    -h unknown.domain.tld \
+    -t "${NAME}"
 
   PRIVATE_CONFIG_TWO=$(duplicate_config_for_container . mail_non_subdomain_hostname)
-	docker run --rm -d --name mail_non_subdomain_hostname \
-		-v "${PRIVATE_CONFIG_TWO}":/tmp/docker-mailserver \
-		-v "$(pwd)/test/test-files":/tmp/docker-mailserver-test:ro \
-		-e PERMIT_DOCKER=network \
-		-e ENABLE_SRS=1 \
-		-e DMS_DEBUG=0 \
-		--hostname domain.com \
-    --domainname domain.com \
-		-t "${NAME}"
+  docker run --rm -d --name mail_non_subdomain_hostname \
+    -v "${PRIVATE_CONFIG_TWO}":/tmp/docker-mailserver \
+    -v "$(pwd)/test/test-files":/tmp/docker-mailserver-test:ro \
+    -e PERMIT_DOCKER=network \
+    -e ENABLE_SRS=1 \
+    --hostname domain.com \
+    -t "${NAME}"
 
   PRIVATE_CONFIG_THREE=$(duplicate_config_for_container . mail_srs_domainname)
   docker run --rm -d --name mail_srs_domainname \
     -v "${PRIVATE_CONFIG_THREE}":/tmp/docker-mailserver \
     -v "$(pwd)/test/test-files":/tmp/docker-mailserver-test:ro \
     -e PERMIT_DOCKER=network \
-    -e DMS_DEBUG=0 \
     -e ENABLE_SRS=1 \
     -e SRS_DOMAINNAME='srs.my-domain.com' \
     --domainname 'my-domain.com' \
@@ -42,23 +39,23 @@ function setup_file() {
     -v "${PRIVATE_CONFIG_FOUR}":/tmp/docker-mailserver \
     -v "$(pwd)/test/test-files":/tmp/docker-mailserver-test:ro \
     -e PERMIT_DOCKER=network \
-    -e DMS_DEBUG=0 \
     -e ENABLE_SRS=1 \
     --domainname 'my-domain.com' \
     --hostname 'mail' \
     -t "${NAME}"
 
   wait_for_smtp_port_in_container mail_override_hostname
-
   wait_for_smtp_port_in_container mail_non_subdomain_hostname
-
   wait_for_smtp_port_in_container mail_srs_domainname
-
   wait_for_smtp_port_in_container mail_domainname
 
   # postfix virtual transport lmtp
   docker exec mail_override_hostname /bin/sh -c "nc 0.0.0.0 25 < /tmp/docker-mailserver-test/email-templates/existing-user1.txt"
   docker exec mail_non_subdomain_hostname /bin/sh -c "nc 0.0.0.0 25 < /tmp/docker-mailserver-test/email-templates/existing-user1.txt"
+}
+
+function teardown_file() {
+  docker rm -f mail_override_hostname mail_non_subdomain_hostname mail_srs_domainname mail_domainname
 }
 
 @test "checking SRS: SRS_DOMAINNAME is used correctly" {
@@ -77,16 +74,22 @@ function setup_file() {
 @test "checking configuration: hostname/domainname override: check overriden hostname is applied to all configs" {
   run docker exec mail_override_hostname /bin/bash -c "cat /etc/mailname | grep my-domain.com"
   assert_success
+
   run docker exec mail_override_hostname /bin/bash -c "postconf -n | grep mydomain | grep my-domain.com"
   assert_success
+
   run docker exec mail_override_hostname /bin/bash -c "postconf -n | grep myhostname | grep mail.my-domain.com"
   assert_success
+
   run docker exec mail_override_hostname /bin/bash -c "doveconf | grep hostname | grep mail.my-domain.com"
   assert_success
+
   run docker exec mail_override_hostname /bin/bash -c "cat /etc/opendmarc.conf | grep AuthservID | grep mail.my-domain.com"
   assert_success
+
   run docker exec mail_override_hostname /bin/bash -c "cat /etc/opendmarc.conf | grep TrustedAuthservIDs | grep mail.my-domain.com"
   assert_success
+
   run docker exec mail_override_hostname /bin/bash -c "cat /etc/amavis/conf.d/05-node_id | grep myhostname | grep mail.my-domain.com"
   assert_success
 }
@@ -99,6 +102,7 @@ function setup_file() {
 @test "checking configuration: hostname/domainname override: check headers of received mail" {
   run docker exec mail_override_hostname /bin/sh -c "ls -A /var/mail/localhost.localdomain/user1/new | wc -l | grep 1"
   assert_success
+
   run docker exec mail_override_hostname /bin/sh -c "cat /var/mail/localhost.localdomain/user1/new/* | grep mail.my-domain.com"
   assert_success
 
@@ -129,16 +133,22 @@ function setup_file() {
 @test "checking configuration: non-subdomain: check overriden hostname is applied to all configs" {
   run docker exec mail_non_subdomain_hostname /bin/bash -c "cat /etc/mailname | grep domain.com"
   assert_success
+
   run docker exec mail_non_subdomain_hostname /bin/bash -c "postconf -n | grep mydomain | grep domain.com"
   assert_success
+
   run docker exec mail_non_subdomain_hostname /bin/bash -c "postconf -n | grep myhostname | grep domain.com"
   assert_success
+
   run docker exec mail_non_subdomain_hostname /bin/bash -c "doveconf | grep hostname | grep domain.com"
   assert_success
+
   run docker exec mail_non_subdomain_hostname /bin/bash -c "cat /etc/opendmarc.conf | grep AuthservID | grep domain.com"
   assert_success
+
   run docker exec mail_non_subdomain_hostname /bin/bash -c "cat /etc/opendmarc.conf | grep TrustedAuthservIDs | grep domain.com"
   assert_success
+
   run docker exec mail_non_subdomain_hostname /bin/bash -c "cat /etc/amavis/conf.d/05-node_id | grep myhostname | grep domain.com"
   assert_success
 }
@@ -151,6 +161,7 @@ function setup_file() {
 @test "checking configuration: non-subdomain: check headers of received mail" {
   run docker exec mail_non_subdomain_hostname /bin/sh -c "ls -A /var/mail/localhost.localdomain/user1/new | wc -l | grep 1"
   assert_success
+
   run docker exec mail_non_subdomain_hostname /bin/sh -c "cat /var/mail/localhost.localdomain/user1/new/* | grep domain.com"
   assert_success
 }

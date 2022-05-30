@@ -1,29 +1,28 @@
 load 'test_helper/common'
 
 function setup_file() {
-    local PRIVATE_CONFIG
-    PRIVATE_CONFIG=$(duplicate_config_for_container .)
-    docker run --rm -d --name mail_fail2ban \
-		-v "${PRIVATE_CONFIG}":/tmp/docker-mailserver \
-		-v "$(pwd)/test/test-files":/tmp/docker-mailserver-test:ro \
-		-e ENABLE_FAIL2BAN=1 \
-		-e POSTSCREEN_ACTION=ignore \
-		--cap-add=NET_ADMIN \
-		-h mail.my-domain.com -t "${NAME}"
+  local PRIVATE_CONFIG
+  PRIVATE_CONFIG=$(duplicate_config_for_container .)
+  docker run --rm -d --name mail_fail2ban \
+    -v "${PRIVATE_CONFIG}":/tmp/docker-mailserver \
+    -v "$(pwd)/test/test-files":/tmp/docker-mailserver-test:ro \
+    -e ENABLE_FAIL2BAN=1 \
+    -e POSTSCREEN_ACTION=ignore \
+    --cap-add=NET_ADMIN \
+    -h mail.my-domain.com -t "${NAME}"
 
-    # Create a container which will send wrong authentications and should get banned
-    docker run --name fail-auth-mailer \
-        -e MAIL_FAIL2BAN_IP="$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' mail_fail2ban)" \
-        -v "$(pwd)/test/test-files":/tmp/docker-mailserver-test \
-        -d "${NAME}" \
-        tail -f /var/log/faillog
+  # Create a container which will send wrong authentications and should get banned
+  docker run --name fail-auth-mailer \
+    -e MAIL_FAIL2BAN_IP="$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' mail_fail2ban)" \
+    -v "$(pwd)/test/test-files":/tmp/docker-mailserver-test \
+    -d "${NAME}" \
+    tail -f /var/log/faillog
 
-    wait_for_finished_setup_in_container mail_fail2ban
-
+  wait_for_finished_setup_in_container mail_fail2ban
 }
 
 function teardown_file() {
-    docker rm -f mail_fail2ban fail-auth-mailer
+  docker rm -f mail_fail2ban fail-auth-mailer
 }
 
 #
@@ -64,14 +63,14 @@ function teardown_file() {
     run docker exec mail_fail2ban /bin/sh -c "fail2ban-client get ${FILTER} maxretry"
     assert_output 2
 
-    run docker exec mail_fail2ban /bin/sh -c "fail2ban-client -d | grep -F \"['set', 'dovecot', 'addaction', 'iptables-multiport']\""
-    assert_output "['set', 'dovecot', 'addaction', 'iptables-multiport']"
+    run docker exec mail_fail2ban /bin/sh -c "fail2ban-client -d | grep -F \"['set', 'dovecot', 'addaction', 'nftables-multiport']\""
+    assert_output "['set', 'dovecot', 'addaction', 'nftables-multiport']"
 
-    run docker exec mail_fail2ban /bin/sh -c "fail2ban-client -d | grep -F \"['set', 'postfix', 'addaction', 'iptables-multiport']\""
-    assert_output "['set', 'postfix', 'addaction', 'iptables-multiport']"
+    run docker exec mail_fail2ban /bin/sh -c "fail2ban-client -d | grep -F \"['set', 'postfix', 'addaction', 'nftables-multiport']\""
+    assert_output "['set', 'postfix', 'addaction', 'nftables-multiport']"
 
-    run docker exec mail_fail2ban /bin/sh -c "fail2ban-client -d | grep -F \"['set', 'postfix-sasl', 'addaction', 'iptables-multiport']\""
-    assert_output "['set', 'postfix-sasl', 'addaction', 'iptables-multiport']"
+    run docker exec mail_fail2ban /bin/sh -c "fail2ban-client -d | grep -F \"['set', 'postfix-sasl', 'addaction', 'nftables-multiport']\""
+    assert_output "['set', 'postfix-sasl', 'addaction', 'nftables-multiport']"
   done
 }
 
@@ -96,13 +95,12 @@ function teardown_file() {
   run docker exec mail_fail2ban /bin/sh -c "fail2ban-client status postfix-sasl | grep '${FAIL_AUTH_MAILER_IP}'"
   assert_success
 
-  # Checking that FAIL_AUTH_MAILER_IP is banned by iptables and blocktype set to DROP
-  run docker exec mail_fail2ban /bin/sh -c "iptables -n -L f2b-postfix-sasl"
-  assert_output --regexp "DROP.+all.+${FAIL_AUTH_MAILER_IP}"
+  # Checking that FAIL_AUTH_MAILER_IP is banned by nftables and blocktype set to DROP
+  run docker exec mail_fail2ban /bin/sh -c "nft list set inet f2b-table addr-set-postfix-sasl 2>/dev/null"
+  assert_output --regexp "${FAIL_AUTH_MAILER_IP}"
 }
 
 @test "checking fail2ban: unban ip works" {
-
   FAIL_AUTH_MAILER_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' fail-auth-mailer)
   docker exec mail_fail2ban fail2ban-client set postfix-sasl unbanip "${FAIL_AUTH_MAILER_IP}"
 
@@ -111,36 +109,46 @@ function teardown_file() {
   run docker exec mail_fail2ban /bin/sh -c "fail2ban-client status postfix-sasl | grep 'IP list:.*${FAIL_AUTH_MAILER_IP}'"
   assert_failure
 
-  # Checking that FAIL_AUTH_MAILER_IP is unbanned by iptables
-  run docker exec mail_fail2ban /bin/sh -c "iptables -L f2b-postfix-sasl -n | grep REJECT | grep '${FAIL_AUTH_MAILER_IP}'"
-  assert_failure
+  # Checking that FAIL_AUTH_MAILER_IP is unbanned by nftables
+  run docker exec mail_fail2ban /bin/sh -c "nft list set inet f2b-table addr-set-postfix-sasl 2>/dev/null"
+  refute_output "${FAIL_AUTH_MAILER_IP}"
 }
 
-#
-# debug
-#
+@test "checking fail2ban ban" {
+  run docker exec mail_fail2ban fail2ban ban 192.0.66.7
+  assert_success
+  assert_output "Banned custom IP: 1"
 
-@test "checking setup.sh: setup.sh debug fail2ban" {
+  run docker exec mail_fail2ban fail2ban
+  assert_success
+  assert_output --regexp "Banned in custom:.*192\.0\.66\.7"
 
+  run docker exec mail_fail2ban fail2ban unban 192.0.66.7
+  assert_success
+  assert_output --partial "Unbanned IP from custom: 1"
+}
+
+@test "checking setup.sh: setup.sh fail2ban" {
   run docker exec mail_fail2ban /bin/sh -c "fail2ban-client set dovecot banip 192.0.66.4"
   run docker exec mail_fail2ban /bin/sh -c "fail2ban-client set dovecot banip 192.0.66.5"
 
   sleep 10
 
-  run ./setup.sh -c mail_fail2ban debug fail2ban
-  assert_output --regexp "^Banned in dovecot: 192.0.66.5, 192.0.66.4.*"
+  run ./setup.sh -c mail_fail2ban fail2ban
+  assert_output --regexp '^Banned in dovecot:.*192\.0\.66\.4'
+  assert_output --regexp '^Banned in dovecot:.*192\.0\.66\.5'
 
-  run ./setup.sh -c mail_fail2ban debug fail2ban unban 192.0.66.4
+  run ./setup.sh -c mail_fail2ban fail2ban unban 192.0.66.4
   assert_output --partial "Unbanned IP from dovecot: 1"
 
-  run ./setup.sh -c mail_fail2ban debug fail2ban
-  assert_output --regexp "^Banned in dovecot: 192.0.66.5.*"
+  run ./setup.sh -c mail_fail2ban fail2ban
+  assert_output --regexp "^Banned in dovecot:.*192\.0\.66\.5"
 
-  run ./setup.sh -c mail_fail2ban debug fail2ban unban 192.0.66.5
+  run ./setup.sh -c mail_fail2ban fail2ban unban 192.0.66.5
   assert_output --partial "Unbanned IP from dovecot: 1"
 
-  run ./setup.sh -c mail_fail2ban debug fail2ban unban
-  assert_output --partial "You need to specify an IP address. Run"
+  run ./setup.sh -c mail_fail2ban fail2ban unban
+  assert_output --partial "You need to specify an IP address: Run"
 }
 
 #
