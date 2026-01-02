@@ -53,6 +53,15 @@ jobs:
           restore-keys: |
             cache-buildx-
 
+      - name: 'Debug secrets availability'
+        run: |
+          echo "Docker username length: ${#DOCKER_USERNAME}"
+          echo "Docker password length: ${#DOCKER_PASSWORD}"
+          echo "Actor: ${{ github.actor }}"
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          
       - name: 'Login to DockerHub'
         uses: docker/login-action@v3
         with:
