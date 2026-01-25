@@ -91,7 +91,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
           # Export built images to tarball for use in publish job:
-          outputs: type=docker,dest=/tmp/dms-image.tar
+          outputs: type=oci,dest=/tmp/dms-image.tar
           # Disable provenance attestation: https://docs.docker.com/build/attestations/slsa-provenance/
           provenance: false
           tags: docker-mailserver:cache
