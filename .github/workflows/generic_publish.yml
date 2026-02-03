@@ -73,13 +73,13 @@ jobs:
         run: |
           # Parse all tags from metadata-action output
           IFS=',' read -ra TAGS <<< "${{ steps.prep.outputs.tags }}"
-          
+
           # Build tag arguments for imagetools
           TAG_ARGS=()
           for tag in "${TAGS[@]}"; do
             TAG_ARGS+=("-t" "${tag}")
           done
-          
+
           # Use buildx imagetools to push OCI image to registries
           docker buildx imagetools create \
             "${TAG_ARGS[@]}" \
