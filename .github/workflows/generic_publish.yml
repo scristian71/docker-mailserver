@@ -49,20 +49,12 @@ jobs:
           name: dms-image
           path: /tmp
 
-      # Load the image into Docker
-      - name: 'Load Docker image'
+      # Extract OCI archive for buildx
+      - name: 'Extract OCI archive'
         run: |
-          docker load --input /tmp/dms-image.tar
-          docker image ls -a
-
-      - name: 'Debug secrets availability'
-        run: |
-          echo "Docker username length: ${#DOCKER_USERNAME}"
-          echo "Docker password length: ${#DOCKER_PASSWORD}"
-          echo "Actor: ${{ github.actor }}"
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          mkdir -p /tmp/oci-layout
+          tar -xf /tmp/dms-image.tar -C /tmp/oci-layout
+          ls -la /tmp/oci-layout/
 
       - name: 'Login to DockerHub'
         uses: docker/login-action@v3
@@ -77,17 +69,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 'Tag and publish images'
+      - name: 'Publish OCI images with buildx'
         run: |
-          # Tag the loaded image with all required tags
+          # Parse all tags from metadata-action output
           IFS=',' read -ra TAGS <<< "${{ steps.prep.outputs.tags }}"
+          
+          # Build tag arguments for imagetools
+          TAG_ARGS=()
           for tag in "${TAGS[@]}"; do
-            echo "Tagging: docker-mailserver:cache -> ${tag}"
-            docker tag docker-mailserver:cache "${tag}"
+            TAG_ARGS+=("-t" "${tag}")
           done
-
-          # Push all tags
-          for tag in "${TAGS[@]}"; do
-            echo "Pushing: ${tag}"
-            docker push "${tag}"
-          done
+          
+          # Use buildx imagetools to push OCI image to registries
+          docker buildx imagetools create \
+            "${TAG_ARGS[@]}" \
+            --file /tmp/oci-layout
