@@ -83,4 +83,4 @@ jobs:
           # Use buildx imagetools to push OCI image to registries
           docker buildx imagetools create \
             "${TAG_ARGS[@]}" \
-            --file /tmp/oci-layout
+            oci-layout:///tmp/oci-layout
