@@ -23,7 +23,7 @@ permissions:
 jobs:
   build-image:
     name: 'Build'
-    runs-on: ubuntu-24.04
+    runs-on: self-hosted
     outputs:
       build-cache-key: ${{ steps.derive-image-cache-key.outputs.digest }}
     steps:

@@ -14,7 +14,7 @@ permissions:
 jobs:
   publish-images:
     name: 'Publish'
-    runs-on: ubuntu-24.04
+    runs-on: self-hosted
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v6
