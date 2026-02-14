@@ -49,12 +49,11 @@ jobs:
           name: dms-image
           path: /tmp
 
-      # Extract OCI archive for buildx
-      - name: 'Extract OCI archive'
+      # Load the image into Docker
+      - name: 'Load Docker image'
         run: |
-          mkdir -p /tmp/oci-layout
-          tar -xf /tmp/dms-image.tar -C /tmp/oci-layout
-          ls -la /tmp/oci-layout/
+          docker load -i /tmp/dms-image.tar
+          docker images
 
       - name: 'Login to DockerHub'
         uses: docker/login-action@v3
@@ -69,15 +68,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 'Publish OCI images with buildx'
+      - name: 'Publish images to registries'
         run: |
+          # Get the loaded image name
+          IMAGE_ID=$(docker images --format "{{.Repository}}:{{.Tag}}" | head -n1)
+          echo "Loaded image: ${IMAGE_ID}"
+          
           # Parse all tags from metadata-action output
           IFS=',' read -ra TAGS <<< "${{ steps.prep.outputs.tags }}"
 
-          # Push OCI image to registries with each tag
+          # Tag and push to all registries with each tag
           for tag in "${TAGS[@]}"; do
             echo "Pushing ${tag}..."
-            docker buildx imagetools create \
-              -t "${tag}" \
-              oci-layout:///tmp/oci-layout
+            docker tag "${IMAGE_ID}" "${tag}"
+            docker push "${tag}"
           done
