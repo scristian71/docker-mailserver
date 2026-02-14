@@ -56,7 +56,7 @@ jobs:
           provenance: false
 
       - name: 'Run tests'
-        run: make generate-accounts tests/${{ matrix.part }}
+        run: make generate-accounts tests/${{ matrix.part }} clean
 
       - name: 'Clean up'
         run: make clean
