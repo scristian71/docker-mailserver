@@ -57,3 +57,6 @@ jobs:
 
       - name: 'Run tests'
         run: make generate-accounts tests/${{ matrix.part }}
+
+      - name: 'Clean up'
+        run: make clean
