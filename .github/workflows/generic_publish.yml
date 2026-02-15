@@ -73,7 +73,7 @@ jobs:
           # Get the loaded image name
           IMAGE_ID=$(docker images --format "{{.Repository}}:{{.Tag}}" | head -n1)
           echo "Loaded image: ${IMAGE_ID}"
-          
+
           # Parse all tags from metadata-action output
           IFS=',' read -ra TAGS <<< "${{ steps.prep.outputs.tags }}"
 
